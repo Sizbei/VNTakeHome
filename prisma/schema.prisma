@@ -1,0 +1,14 @@
+model User {
+  id        Int      @id @default(autoincrement())
+  userName  String
+  email     String   @unique
+  password  String
+}
+
+model Movie {
+  id          Int      @id @default(autoincrement())
+  movieName   String
+  description String
+  director    String
+  releaseDate DateTime
+}
