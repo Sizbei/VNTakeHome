@@ -15,6 +15,7 @@ model User {
   userName  String
   email     String   @unique
   password  String
+  token     String?
 }
 
 model Movie {
