@@ -2,11 +2,15 @@ import { ApolloServer, gql } from "apollo-server";
 import { PrismaClient } from "@prisma/client";
 import { resolvers as userResolvers } from "./resolvers/user.resolver";
 import { resolvers as movieResolvers } from "./resolvers/movie.resolver";
+import { config } from 'dotenv';
 import jwt from "jsonwebtoken";
 
-const prisma = new PrismaClient();
+config();
 
+const prisma = new PrismaClient();
+const secretKey = process.env.JWT_SECRET_KEY;
 const typeDefs = gql`
+
   type User {
     id: Int
     userName: String
@@ -23,8 +27,8 @@ const typeDefs = gql`
   }
 
   type AuthPayload {
-    token: String
-    user: User
+    token: String!
+    user: User!
   }
 
   type Query {
@@ -48,7 +52,7 @@ const server = new ApolloServer({
   context: ({ req }) => {
     const token = req.headers.authorization || "";
     try {
-      const decoded = jwt.verify(token, "yolo");
+      const decoded = jwt.verify(token, "secretKey");
       const userId = (decoded as { userId: number }).userId;
       const user = prisma.user.findUnique({
         where: {
