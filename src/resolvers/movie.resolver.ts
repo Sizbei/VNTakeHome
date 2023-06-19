@@ -1,4 +1,5 @@
 import { PrismaClient } from "@prisma/client";
+import { release } from "os";
 
 const prisma = new PrismaClient();
 
@@ -22,12 +23,13 @@ export const resolvers = {
         throw new Error("Unauthorized");
       }
       const { movieName, description, director, releaseDate } = args;
+      const parsedReleaseDate = new Date(releaseDate);
       return prisma.movie.create({
         data: {
           movieName,
           description,
           director,
-          releaseDate,
+          releaseDate: parsedReleaseDate,
         },
       });
     },
@@ -36,6 +38,12 @@ export const resolvers = {
         throw new Error("Unauthorized");
       }
       const { id, movieName, description, director, releaseDate } = args;
+      let parsedReleaseDate: Date | undefined;
+      if (releaseDate){
+        parsedReleaseDate = new Date(releaseDate);
+      }else {
+        parsedReleaseDate = undefined;
+      }
       return prisma.movie.update({
         where: {
           id,
@@ -44,7 +52,7 @@ export const resolvers = {
           movieName,
           description,
           director,
-          releaseDate,
+          releaseDate: parsedReleaseDate,
         },
       });
     },

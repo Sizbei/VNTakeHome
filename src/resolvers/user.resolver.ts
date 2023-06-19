@@ -62,5 +62,34 @@ export const resolvers = {
         user,
       };
     },
+    changePassword: async (_: any, args: { email: string; currentPassword: string; newPassword: string }, context: any) => {
+      const { email, currentPassword, newPassword } = args;
+
+      const user = await prisma.user.findUnique({
+        where: {
+          email,
+        },
+      });
+
+      if (!user) {
+        throw new Error("User not found");
+      }
+
+      const passwordMatch = await bcrypt.compare(currentPassword, user.password);
+      if (!passwordMatch) {
+        throw new Error("Invalid current password");
+      }
+
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+      return prisma.user.update({
+        where: {
+          email,
+        },
+        data: {
+          password: hashedPassword,
+    },
+  });
+},
   },
 };
