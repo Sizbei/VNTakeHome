@@ -27,9 +27,26 @@ const typeDefs = gql`
     user: User!
   }
 
+  type MovieConnection {
+    movies: [Movie]
+    totalCount: Int!
+    totalPages: Int!
+    currentPage: Int!
+  }
+
+  input MovieFilters {
+    movieName: String
+    director: String
+  }
+
+  input SortOptions {
+    field: String!
+    order: String!
+  }
+
   type Query {
     users: [User]
-    movies: [Movie]
+    movies(page: Int, pageSize: Int, filters: MovieFilters, sortBy: SortOptions): MovieConnection
     movie(id: Int!): Movie
   }
 

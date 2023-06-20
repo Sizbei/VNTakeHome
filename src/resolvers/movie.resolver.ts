@@ -3,10 +3,58 @@ import { release } from "os";
 
 const prisma = new PrismaClient();
 
+const DEFAULT_PAGE_SIZE = 10;
+
+interface MovieFilters {
+  movieName?: string;
+  director?: string;
+}
+
 export const resolvers = {
   Query: {
-    movies: async () => {
-      return prisma.movie.findMany();
+    movies: async (_: any, args: { page?: number; pageSize?: number; filters?: MovieFilters; sortBy?: string }) => {
+      const { page = 1, pageSize = DEFAULT_PAGE_SIZE, filters, sortBy } = args;
+      const skip = (page - 1) * pageSize;
+
+      const prismaFilters: any = {};
+
+      if (filters) {
+        if (filters.movieName) {
+          prismaFilters.movieName = {
+            contains: filters.movieName,
+          };
+        }
+        if (filters.director) {
+          prismaFilters.director = {
+            contains: filters.director,
+          };
+        }
+      }
+
+      const prismaSort: any = {};
+
+      if (sortBy) {
+        const [field, order] = sortBy.split("_");
+        if (field && order) {
+          prismaSort[field] = order.toUpperCase();
+        }
+      }
+
+      const movies = await prisma.movie.findMany({
+        skip,
+        take: pageSize,
+        where: prismaFilters,
+        orderBy: prismaSort,
+      });
+
+      const totalMovies = await prisma.movie.count({ where: prismaFilters });
+
+      return {
+        movies,
+        totalCount: totalMovies,
+        totalPages: Math.ceil(totalMovies / pageSize),
+        currentPage: page,
+      };
     },
     movie: async (_: any, args: { id: number }) => {
       const { id } = args;
