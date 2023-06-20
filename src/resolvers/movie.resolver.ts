@@ -54,9 +54,26 @@ export const resolvers = {
       const prismaSort: any = {};
 
       if (sortBy && sortBy.field && sortBy.order) {
+        const validFields = [
+          'id',
+          'movieName',
+          'director',
+          'description',
+          'releaseDate',
+        ];
+
+        if (!validFields.includes(sortBy.field)) {
+          throw new Error('Invalid sort field');
+        }
+
+        const validOrders = ['asc', 'desc'];
+
+        if (!validOrders.includes(sortBy.order.toLowerCase())) {
+          throw new Error('Invalid sort order');
+        }
+
         prismaSort[sortBy.field] = sortBy.order.toLowerCase();
       }
-
       try {
         const movies = await prisma.movie.findMany({
           skip,
