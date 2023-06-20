@@ -21,22 +21,29 @@ export const resolvers = {
     signUp: async (_: any, args: { userName: string; email: string; password: string }) => {
       const { userName, email, password } = args;
       const hashedPassword = await bcrypt.hash(password, 10);
-      const user = await prisma.user.create({
-        data: {
-          userName,
-          email,
-          password: hashedPassword,
-        },
-      });
-      const token = generateToken(user);
-      return {
-        token,
-        user: {
-          id: user.id,
-          userName: user.userName,
-          email: user.email,
-        },
-      };
+
+      try {
+        const user = await prisma.user.create({
+          data: {
+            userName,
+            email,
+            password: hashedPassword,
+          },
+        });
+        const token = generateToken(user);
+
+        return {
+          token,
+          user: {
+            id: user.id,
+            userName: user.userName,
+            email: user.email,
+          },
+        };
+      } catch (error) {
+        throw new Error("Failed to signup");
+      }
+
     },
     login: async (_: any, args: { email: string; password: string }) => {
       const { email, password } = args;
@@ -77,15 +84,19 @@ export const resolvers = {
       }
 
       const hashedPassword = await bcrypt.hash(newPassword, 10);
-
-      return prisma.user.update({
-        where: {
-          email,
-        },
-        data: {
-          password: hashedPassword,
-    },
-  });
+      
+      try {
+        return prisma.user.update({
+          where: {
+            email,
+          },
+          data: {
+            password: hashedPassword,
+          },
+        });
+      } catch (error) {
+        throw new Error("Failed to change password");
+      }
 },
   },
 };
