@@ -9,6 +9,7 @@ Features
     - Update an existing movie's details
     - Delete a movie by its ID
     - User Authentication: Users can sign up and sign in to access protected operations such as creating, updating, and deleting movies.
+    - change password on users
 
 ## Getting Started
 
@@ -22,6 +23,44 @@ To get started using the Movie Management API, follow these steps:
     You can now perform GraphQL queries and mutations using the following examples.
 
 # Example Queries and Mutations for graphql
+
+
+## Sign up a new user
+```
+mutation {
+  signUp(userName: "JohnDoe", email: "john.doe@example.com", password: "password123") {
+    token
+    user {
+      id
+      userName
+      email
+    }
+  }
+}
+```
+## Login with user credentials
+mutation {
+  login(email: "john.doe@example.com", password: "password123") {
+    token
+    user {
+      id
+      userName
+      email
+    }
+  }
+}
+
+## Change user password
+```
+mutation {
+  changePassword(email: "john.doe@example.com", currentPassword: "password123", newPassword: "newpassword123") {
+    id
+    userName
+    email
+  }
+}
+```
+
 
 ## Fetching a list of movies
 ```
