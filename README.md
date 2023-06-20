@@ -63,7 +63,7 @@ mutation {
 ```
 
 
-## Fetching a list of movies
+## Fetching a list of movies 
 ```
 query GetMovies {
   movies {
@@ -115,6 +115,7 @@ query GetMovie {
 ```
 
 ## Creating a new movie
+    for most of the mutations around movies, logging in and getting a token for the header is required. (set Authorization to (TOKEN) in header)
 ```
 mutation CreateMovie {
   createMovie(
