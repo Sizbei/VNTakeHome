@@ -1,5 +1,5 @@
-import { PrismaClient } from "@prisma/client";
-import { release } from "os";
+import { PrismaClient } from '@prisma/client';
+import { release } from 'os';
 
 const prisma = new PrismaClient();
 
@@ -18,7 +18,15 @@ interface SortOptions {
 
 export const resolvers = {
   Query: {
-    movies: async (_: any, args: { page?: number; pageSize?: number; filters?: MovieFilters; sortBy?: SortOptions }) => {
+    movies: async (
+      _: any,
+      args: {
+        page?: number;
+        pageSize?: number;
+        filters?: MovieFilters;
+        sortBy?: SortOptions;
+      }
+    ) => {
       const { page = 1, pageSize = DEFAULT_PAGE_SIZE, filters, sortBy } = args;
 
       const skip = (page - 1) * pageSize;
@@ -66,7 +74,7 @@ export const resolvers = {
           currentPage: page,
         };
       } catch (error) {
-        throw new Error("Failed to fetch movies");
+        throw new Error('Failed to fetch movies');
       }
     },
     movie: async (_: any, args: { id: number }) => {
@@ -80,23 +88,28 @@ export const resolvers = {
         });
 
         if (!movie) {
-          throw new Error("Movie not found");
+          throw new Error('Movie not found');
         }
 
         return movie;
       } catch (error) {
-        throw new Error("Failed to fetch movie");
+        throw new Error('Failed to fetch movie');
       }
     },
   },
   Mutation: {
     createMovie: async (
       _: any,
-      args: { movieName: string; description: string; director: string; releaseDate: Date },
+      args: {
+        movieName: string;
+        description: string;
+        director: string;
+        releaseDate: Date;
+      },
       context: any
     ) => {
       if (!context.user) {
-        throw new Error("Unauthorized");
+        throw new Error('Unauthorized');
       }
 
       const { movieName, description, director, releaseDate } = args;
@@ -112,16 +125,22 @@ export const resolvers = {
           },
         });
       } catch (error) {
-        throw new Error("Failed to create movie");
+        throw new Error('Failed to create movie');
       }
     },
     updateMovie: async (
       _: any,
-      args: { id: number; movieName?: string; description?: string; director?: string; releaseDate?: Date },
+      args: {
+        id: number;
+        movieName?: string;
+        description?: string;
+        director?: string;
+        releaseDate?: Date;
+      },
       context: any
     ) => {
       if (!context.user) {
-        throw new Error("Unauthorized");
+        throw new Error('Unauthorized');
       }
 
       const { id, movieName, description, director, releaseDate } = args;
@@ -132,9 +151,8 @@ export const resolvers = {
       });
 
       if (!movie) {
-        throw new Error("Movie not found");
+        throw new Error('Movie not found');
       }
-
 
       let parsedReleaseDate: Date | undefined;
 
@@ -157,12 +175,12 @@ export const resolvers = {
           },
         });
       } catch (error) {
-        throw new Error("Failed to update movie");
+        throw new Error('Failed to update movie');
       }
     },
     deleteMovie: async (_: any, args: { id: number }, context: any) => {
       if (!context.user) {
-        throw new Error("Unauthorized");
+        throw new Error('Unauthorized');
       }
       const { id } = args;
       const movie = await prisma.movie.findUnique({
@@ -172,19 +190,17 @@ export const resolvers = {
       });
 
       if (!movie) {
-          throw new Error("Movie not found");
+        throw new Error('Movie not found');
       }
-      try {      
-        
+      try {
         return prisma.movie.delete({
-        where: {
-          id,
-        },
-      });
-      }catch (error) {
-          throw new Error("Failed to delete movie");
+          where: {
+            id,
+          },
+        });
+      } catch (error) {
+        throw new Error('Failed to delete movie');
       }
-
     },
   },
 };

@@ -1,12 +1,12 @@
-import { PrismaClient, User } from "@prisma/client";
-import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
+import { PrismaClient, User } from '@prisma/client';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
 
 const prisma = new PrismaClient();
 
 const generateToken = (user: User) => {
-  const token = jwt.sign({ userId: user.id }, "secretKey", {
-    expiresIn: "1h",
+  const token = jwt.sign({ userId: user.id }, 'secretKey', {
+    expiresIn: '1h',
   });
   return token;
 };
@@ -18,7 +18,10 @@ export const resolvers = {
     },
   },
   Mutation: {
-    signUp: async (_: any, args: { userName: string; email: string; password: string }) => {
+    signUp: async (
+      _: any,
+      args: { userName: string; email: string; password: string }
+    ) => {
       const { userName, email, password } = args;
       const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -41,9 +44,8 @@ export const resolvers = {
           },
         };
       } catch (error) {
-        throw new Error("Failed to signup");
+        throw new Error('Failed to signup');
       }
-
     },
     login: async (_: any, args: { email: string; password: string }) => {
       const { email, password } = args;
@@ -53,11 +55,11 @@ export const resolvers = {
         },
       });
       if (!user) {
-        throw new Error("Invalid login credentials");
+        throw new Error('Invalid login credentials');
       }
       const passwordMatch = await bcrypt.compare(password, user.password);
       if (!passwordMatch) {
-        throw new Error("Invalid login credentials");
+        throw new Error('Invalid login credentials');
       }
       const token = generateToken(user);
       return {
@@ -65,7 +67,11 @@ export const resolvers = {
         user,
       };
     },
-    changePassword: async (_: any, args: { email: string; currentPassword: string; newPassword: string }, context: any) => {
+    changePassword: async (
+      _: any,
+      args: { email: string; currentPassword: string; newPassword: string },
+      context: any
+    ) => {
       const { email, currentPassword, newPassword } = args;
 
       const user = await prisma.user.findUnique({
@@ -75,16 +81,19 @@ export const resolvers = {
       });
 
       if (!user) {
-        throw new Error("User not found");
+        throw new Error('User not found');
       }
 
-      const passwordMatch = await bcrypt.compare(currentPassword, user.password);
+      const passwordMatch = await bcrypt.compare(
+        currentPassword,
+        user.password
+      );
       if (!passwordMatch) {
-        throw new Error("Invalid current password");
+        throw new Error('Invalid current password');
       }
 
       const hashedPassword = await bcrypt.hash(newPassword, 10);
-      
+
       try {
         return prisma.user.update({
           where: {
@@ -95,8 +104,8 @@ export const resolvers = {
           },
         });
       } catch (error) {
-        throw new Error("Failed to change password");
+        throw new Error('Failed to change password');
       }
-},
+    },
   },
 };
