@@ -10,10 +10,16 @@ interface MovieFilters {
   director?: string;
 }
 
+interface SortOptions {
+  field?: string;
+  order?: string;
+}
+
 export const resolvers = {
   Query: {
-    movies: async (_: any, args: { page?: number; pageSize?: number; filters?: MovieFilters; sortBy?: string }) => {
+    movies: async (_: any, args: { page?: number; pageSize?: number; filters?: MovieFilters; sortBy?: SortOptions}) => {
       const { page = 1, pageSize = DEFAULT_PAGE_SIZE, filters, sortBy } = args;
+      
       const skip = (page - 1) * pageSize;
 
       const prismaFilters: any = {};
@@ -33,11 +39,8 @@ export const resolvers = {
 
       const prismaSort: any = {};
 
-      if (sortBy) {
-        const [field, order] = sortBy.split("_");
-        if (field && order) {
-          prismaSort[field] = order.toUpperCase();
-        }
+      if (sortBy && sortBy.field && sortBy.order) {
+        prismaSort[sortBy.field] = sortBy.order.toLowerCase();
       }
 
       const movies = await prisma.movie.findMany({
