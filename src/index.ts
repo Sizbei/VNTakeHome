@@ -2,13 +2,9 @@ import { ApolloServer, gql } from "apollo-server";
 import { PrismaClient } from "@prisma/client";
 import { resolvers as userResolvers } from "./resolvers/user.resolver";
 import { resolvers as movieResolvers } from "./resolvers/movie.resolver";
-import { config } from 'dotenv';
 import jwt from "jsonwebtoken";
 
-config();
-
 const prisma = new PrismaClient();
-const secretKey = process.env.JWT_SECRET_KEY;
 const typeDefs = gql`
 
   type User {
