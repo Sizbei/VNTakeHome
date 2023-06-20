@@ -130,6 +130,13 @@ export const resolvers = {
       }
 
       const { movieName, description, director, releaseDate } = args;
+      if (releaseDate) {
+        const parsedDate = Number(releaseDate);
+
+        if (Number.isNaN(parsedDate)) {
+          throw new Error('Invalid release date');
+        }
+      }
       const parsedReleaseDate = new Date(releaseDate);
 
       try {
@@ -172,8 +179,13 @@ export const resolvers = {
       }
 
       let parsedReleaseDate: Date | undefined;
-
       if (releaseDate) {
+        const parsedDate = Number(releaseDate);
+
+        if (Number.isNaN(parsedDate)) {
+          throw new Error('Invalid release date');
+        }
+
         parsedReleaseDate = new Date(releaseDate);
       } else {
         parsedReleaseDate = undefined;
