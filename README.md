@@ -39,6 +39,7 @@ mutation {
 }
 ```
 ## Login with user credentials
+```
 mutation {
   login(email: "john.doe@example.com", password: "password123") {
     token
@@ -49,7 +50,7 @@ mutation {
     }
   }
 }
-
+```
 ## Change user password
 ```
 mutation {
