@@ -3,11 +3,12 @@
 The Movie Management API is a GraphQL-based server that allows you to manage movies. You can perform various operations such as retrieving movies, adding new movies, updating existing movies, and deleting movies. The API is built using Apollo Server and Prisma, providing a robust and scalable solution for movie management.
 Features
 
-    Fetch a list of movies based on filters and sorting options
-    Retrieve detailed information about a specific movie by its ID
-    Create a new movie with a title, description, director, and release date
-    Update an existing movie's details
-    Delete a movie by its ID
+    - Fetch a list of movies based on filters and sorting options
+    - Retrieve detailed information about a specific movie by its ID
+    - Create a new movie with a title, description, director, and release date
+    - Update an existing movie's details
+    - Delete a movie by its ID
+    - User Authentication: Users can sign up and sign in to access protected operations such as creating, updating, and deleting movies.
 
 ## Getting Started
 
@@ -38,6 +39,28 @@ query GetMovies {
   }
 }
 ```
+
+## Retrieving multiple movies with filters
+```
+query GetMovies($page: Int, $pageSize: Int, $filters: MovieFilters, $sortBy: SortOptions) {
+  movies(page: 1, pageSize: $pageSize, filters: {
+      description: "Two imprisoned men bond over several years, finding solace and eventual redemption through acts of common decency."
+    }, sortBy: {field: "id", 
+      order: "desc"}) {
+    movies {
+      id
+      movieName
+      description
+      director
+      releaseDate
+    }
+    totalCount
+    totalPages
+    currentPage
+  }
+}
+```
+
 ## Retrieving a movie by ID
 ```
 query GetMovie {
@@ -50,6 +73,7 @@ query GetMovie {
   }
 }
 ```
+
 ## Creating a new movie
 ```
 mutation CreateMovie {
