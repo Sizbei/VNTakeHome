@@ -37,6 +37,7 @@ const typeDefs = gql`
   input MovieFilters {
     movieName: String
     director: String
+    description: String
   }
 
   input SortOptions {

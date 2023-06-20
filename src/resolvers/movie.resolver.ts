@@ -8,6 +8,7 @@ const DEFAULT_PAGE_SIZE = 10;
 interface MovieFilters {
   movieName?: string;
   director?: string;
+  description?: string;
 }
 
 interface SortOptions {
@@ -35,6 +36,11 @@ export const resolvers = {
             contains: filters.director,
           };
         }
+        if (filters.description) {
+          prismaFilters.description = {
+            contains: filters.description,
+          };
+        }
       }
 
       const prismaSort: any = {};
@@ -59,13 +65,19 @@ export const resolvers = {
         currentPage: page,
       };
     },
-    movie: async (_: any, args: { id: number }) => {
+    movie: async (_: any, args: { id: number}) => {
       const { id } = args;
-      return prisma.movie.findUnique({
+
+      const movie = await prisma.movie.findUnique({
         where: {
           id,
         },
       });
+
+      if (!movie) {
+        throw new Error("Movie not found");
+      }
+      return movie
     },
   },
   Mutation: {
