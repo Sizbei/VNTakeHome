@@ -130,14 +130,25 @@ export const resolvers = {
       }
 
       const { movieName, description, director, releaseDate } = args;
-      if (releaseDate) {
-        const parsedDate = Number(releaseDate);
-
-        if (Number.isNaN(parsedDate)) {
-          throw new Error('Invalid release date');
-        }
-      }
       const parsedReleaseDate = new Date(releaseDate);
+
+      // Check if a movie with the same name already exists
+      const existingMovie = await prisma.movie.findFirst({
+        where: {
+          movieName: {
+            equals: movieName,
+            mode: 'insensitive', // Case-insensitive search
+          },
+        },
+      });
+
+      if (existingMovie) {
+        throw new Error('A movie with the same name already exists');
+      }
+
+      if (releaseDate && isNaN(parsedReleaseDate!.getTime())) {
+        throw new Error('Invalid release date');
+      }
 
       try {
         return prisma.movie.create({
@@ -178,17 +189,10 @@ export const resolvers = {
         throw new Error('Movie not found');
       }
 
-      let parsedReleaseDate: Date | undefined;
-      if (releaseDate) {
-        const parsedDate = Number(releaseDate);
+      const parsedReleaseDate = releaseDate ? new Date(releaseDate) : undefined;
 
-        if (Number.isNaN(parsedDate)) {
-          throw new Error('Invalid release date');
-        }
-
-        parsedReleaseDate = new Date(releaseDate);
-      } else {
-        parsedReleaseDate = undefined;
+      if (releaseDate && isNaN(parsedReleaseDate!.getTime())) {
+        throw new Error('Invalid release date');
       }
 
       try {
